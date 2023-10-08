@@ -32,9 +32,10 @@
 //   })
 
 export class OpenAI {
-  static GPT3Dot5Turbo = 'gpt-3.5-turbo'
 
-  baseURL = 'https://api.openai.com/v1'
+  static GPT3Dot5Turbo = azOpenAiSettings.models[Object.keys(azOpenAiSettings.models)[0]];
+
+  baseURL = azOpenAiSettings.chatApiUrl; //'https://api.openai.com/v1'
   apiKey
   organizationID = ''
 
@@ -52,7 +53,7 @@ export class OpenAI {
 
   #getHeaders () {
     const headers = {
-      'Authorization': `Bearer ${this.apiKey}`,
+      'Api-Key': this.apiKey,
       'Content-Type': 'application/json'
     }
 
@@ -84,6 +85,11 @@ export class OpenAI {
   }
 }
 
+export class AISetings {
+    modelList = OpenAI.modelList;
+}
+
+
 // Params:
 // model
 // messages
@@ -105,7 +111,7 @@ export class ChatCompletion extends OpenAI {
 
   constructor (apiKey, organizationID) {
     super(apiKey, organizationID)
-    this.endpoint = this.baseURL + '/chat/completions'
+    this.endpoint = this.baseURL
   }
 
   async create (options) {
@@ -114,6 +120,7 @@ export class ChatCompletion extends OpenAI {
     delete options.name
     delete options.createdAt
     delete options.stream
+    this.endpoint = this.baseURL.replace('$model$', options.model);
 
     return await this.post(this.endpoint, options).then((res) => res.json())
   }
@@ -168,6 +175,7 @@ export class ChatCompletion extends OpenAI {
     delete options.createdAt
 
     options.stream = true
+    this.endpoint = this.baseURL.replace('$model$', options.model);
 
     const response = await this.post(this.endpoint, options)
 

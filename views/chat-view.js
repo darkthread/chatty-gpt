@@ -9,7 +9,7 @@ import detectOS from '../js/detect-os.js'
 // import go from '../js/highlightjs/languages/go.min.js'
 // hljs.registerLanguage('go', go);
 
-const tokenLimits = {
+const tokenLimits = azOpenAiSettings.models || {
   'gpt-3.5-turbo': 4096,
   'gpt-3.5-turbo-16k': 16384,
   'gpt-3.5-turbo-0613': 4096,
@@ -72,7 +72,7 @@ class ChatView extends HTMLElement {
     const os = detectOS()
     let submitShortcut = ''
     if (os === 'Windows' || os === 'Linux') {
-      submitShortcut = '<kbd class="items-center rounded border border-gray-200 px-1">Ctrl</kbd>'
+      submitShortcut = '<kbd class="items-center rounded border border-gray-200 px-1">Alt</kbd>'
       submitShortcut += '<span class="text-gray-500"> + </span>'
       submitShortcut += '<kbd class="items-center rounded border border-gray-200 px-1">↵</kbd>'
     } else if (os === 'macOS') {
@@ -110,7 +110,7 @@ class ChatView extends HTMLElement {
     this.shadowRoot.querySelector('form').addEventListener('submit', this.#onSubmit.bind(this), { signal: this.#controller.signal })
 
     this.shadowRoot.querySelector('#message').addEventListener('keydown', (evt) => {
-      if ((evt.metaKey || evt.ctrlKey) && evt.key === 'Enter') {
+      if ((evt.metaKey || evt.altKey) && evt.key === 'Enter') {
         this.#onSubmit(evt)
       }
     }, { signal: this.#controller.signal })
@@ -374,7 +374,7 @@ class ChatView extends HTMLElement {
     this.#completionAPI.createStream(options, (deltaMsg) => {
       // Each delta callback attempts to add the delta to the new message and save it to localStorage
       try {
-        if (deltaMsg.choices[0].delta.content) {
+        if (deltaMsg.choices[0]?.delta?.content) {
           chat.messages[lastMsgIdx].content += deltaMsg.choices[0].delta.content
         }
         localStorage.setItem(this.#chatID, JSON.stringify(chat))
@@ -385,7 +385,7 @@ class ChatView extends HTMLElement {
 
       // Set the innerHTML with the content converted from markdown
       try {
-        if (deltaMsg.choices[0].delta.content) {
+        if (deltaMsg.choices[0]?.delta.content) {
           scrollAfter = this.#atBottom()
           msgContentEl.innerHTML = this.#markdownToHTML(chat.messages[lastMsgIdx].content)
           if (scrollAfter) {

@@ -75,6 +75,10 @@ class LeftMenu extends HTMLElement {
           this.dispatchEvent(new CustomEvent(evt.target.id, { composed: true, bubbles: true }))
         }
       }
+      else if (evt.target.classList.contains('del-btn')) {
+        evt.stopPropagation()
+        this.dispatchEvent(new CustomEvent('del-chat', { detail: evt.target.parentElement.id, composed: true, bubbles: true }))
+      }
     })
 
     // This will ensure, that the menu gets updated, if another tab adds a chat.
@@ -126,6 +130,7 @@ class LeftMenu extends HTMLElement {
   class="text-gray-400 group-hover:text-gray-500 mr-3 h-6 w-6 flex-shrink-0">
 </chatty-icon>
 ${item.name ? item.name : item.key.substring(5)}
+<img src="del.svg" class="opacity-10 hover:opacity-80 del-btn absolute right-6" alt="delete" />
     `
 
       chatItems.appendChild(menuItem)

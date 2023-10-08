@@ -59,3 +59,10 @@ Using Web Components alone, will only work for modern browsers, so you might as 
  - [ ] Dismiss modals with [ESC]
  - [ ] Settings: Reflect that data has been cleared, right after clearing
 
+ # Notes
+
+ - This is the modified version to use Azure OpenAI service instead of OpenAI API.
+ - A delete menu added on chat item of left menu to delete it from localStorage.
+ - Rename `az-openai-settings.example.js` to `az-openai-settings.js` and set the chatApiUrl, fill your model deployment names and token limit.
+ - To build global.min.css, `npm install -D @tailwindcss/forms` first and `npm run watch`.
+ 

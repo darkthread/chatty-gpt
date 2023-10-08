@@ -1,5 +1,6 @@
 import './chat-parameters.js'
 import detectOS from '../js/detect-os.js'
+import { AISetings } from  '../js/openai.js'
 
 class CreateChat extends HTMLElement {
   #controller
@@ -15,7 +16,7 @@ class CreateChat extends HTMLElement {
     const os = detectOS()
     this.#submitShortcut = ''
     if (os === 'Windows' || os === 'Linux') {
-      this.#submitShortcut = '<kbd class="items-center rounded border border-gray-200 px-1">Ctrl</kbd>'
+      this.#submitShortcut = '<kbd class="items-center rounded border border-gray-200 px-1">Alt</kbd>'
       this.#submitShortcut += '<span class="text-gray-500"> + </span>'
       this.#submitShortcut += '<kbd class="items-center rounded border border-gray-200 px-1">↵</kbd>'
     } else if (os === 'macOS') {
@@ -32,7 +33,7 @@ class CreateChat extends HTMLElement {
     let top_p = localStorage.getItem('top_p') || 1.0
     let presence_penalty = localStorage.getItem('presence_penalty') || 0.0
     let frequency_penalty = localStorage.getItem('frequency_penalty') || 0.0
-
+    const modelOptions = Object.keys(azOpenAiSettings.models).map((modelName) => `<option ${model === modelName ? ' selected' : ''} value="${modelName}">${modelName}</option>`).join('\n');
     this.shadowRoot.innerHTML = `
 <link href="css/global.min.css" rel="stylesheet">
 
@@ -50,14 +51,7 @@ class CreateChat extends HTMLElement {
           <div class="mt-2">
             <select id="model" name="model"
               class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6">
-              <option ${model === 'gpt-3.5-turbo' ? ' selected' : ''} value="gpt-3.5-turbo">gpt-3.5-turbo</option>
-              <option ${model === 'gpt-3.5-turbo-16k' ? ' selected' : ''} value="gpt-3.5-turbo-16k">gpt-3.5-turbo-16k</option>
-              <option ${model === 'gpt-3.5-turbo-0613' ? ' selected' : ''} value="gpt-3.5-turbo-0613">gpt-3.5-turbo-0613</option>
-              <option ${model === 'gpt-3.5-turbo-16k-0613' ? ' selected' : ''} value="gpt-3.5-turbo-16k-0613">gpt-3.5-turbo-16k-0613</option>
-              <option ${model === 'gpt-4' ? ' selected' : ''} value="gpt-4">gpt-4</option>
-              <option ${model === 'gpt-4-0613' ? ' selected' : ''} value="gpt-4-0613">gpt-4-0613</option>
-              <option ${model === 'gpt-4-32k' ? ' selected' : ''} value="gpt-4-32k">gpt-4-32k</option>
-              <option ${model === 'gpt-4-32k-0613' ? ' selected' : ''} value="gpt-4-32k-0613">gpt-4-32k-0613</option>
+              ${modelOptions}
             </select>
           </div>
         </div>
@@ -139,7 +133,7 @@ class CreateChat extends HTMLElement {
     this.shadowRoot.querySelector('textarea#user').addEventListener(
       'keydown',
       (evt) => {
-        if ((evt.metaKey || evt.ctrlKey) && evt.key === 'Enter') {
+        if ((evt.metaKey || evt.altKey) && evt.key === 'Enter') {
           this.#createChat(evt)
         }
       },
